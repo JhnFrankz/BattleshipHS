@@ -1,8 +1,6 @@
 package com.jhnfrankz.battleship;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
@@ -25,10 +23,8 @@ public class Main {
     }
 
     public static void startGameField() {
-        for (int i = 0; i < gameField.length; i++) {
-            for (int j = 0; j < gameField[i].length; j++) {
-                gameField[i][j] = "~";
-            }
+        for (String[] place : gameField) {
+            Arrays.fill(place, "~");
         }
     }
 
@@ -68,12 +64,16 @@ public class Main {
                     if (!isValidLocation()) { //isn't horizontally or vertically
                         System.out.println("Error! Wrong ship location! Try again:\n");
                     } else { // Si está bien en orientación
-                        calculateLength();
+                        checkCoordinates();
 
                         if (!isValidLength(ship.getCells())) { //isn't correct length
                             System.out.printf("Error! Wrong length of the %s! Try again:\n\n", ship.getName());
                         } else {
-                            break;
+                            if (isCloseAnotherPlace()) {
+                                System.out.println("Error! You placed it too close to another one. Try again:\n");
+                            } else {
+                                break;
+                            }
                         }
                     }
                 }
@@ -107,8 +107,8 @@ public class Main {
         for (int i = 0; i < input.length; i++) {
             String number = input[i].substring(1);
 
-            for (int j = 0; j < validNumbers.length; j++) {
-                if (String.valueOf(validNumbers[j]).equals(number)) {
+            for (int validNumber : validNumbers) {
+                if (String.valueOf(validNumber).equals(number)) {
                     isValid[i] = true;
                     break;
                 }
@@ -118,24 +118,17 @@ public class Main {
         return isValid[0] && isValid[1];
     }
 
-    public static void calculateLength() {
-        String strCoord1X = strCoordinates[0].substring(0, 1);   //A1
-        int coord1Y = Integer.parseInt(strCoordinates[0].substring(1));
-        String strCoord2X = strCoordinates[1].substring(0, 1);   //A4
-        int coord2Y = Integer.parseInt(strCoordinates[1].substring(1));
-
-        //Coords in numbers for array 1
-        int coord1X = fromAlphabetToNumber(strCoord1X); //A = 0
-        coord1Y = coord1Y - 1;                          //1 = 0
-
-        //Coords in numbers for array 2
-        int coord2X = fromAlphabetToNumber(strCoord2X); //A = 0
-        coord2Y = coord2Y - 1;
+    public static void checkCoordinates() {
+        int coord1X = strCoordinates[0].charAt(0) - 65;
+        int coord1Y = Integer.parseInt(strCoordinates[0].substring(1)) - 1;
+        int coord2X = strCoordinates[1].charAt(0) - 65;
+        int coord2Y = Integer.parseInt(strCoordinates[1].substring(1)) - 1;
 
         coord1 = new int[]{coord1X, coord1Y};
         coord2 = new int[]{coord2X, coord2Y};
 
-        //LENGTH
+        orderCoords();
+
         if (coord1[0] == coord2[0]) { //isSameRow
             length = Math.abs(coord1[1] - coord2[1]) + 1;
         } else {
@@ -157,45 +150,100 @@ public class Main {
         return length == shipCells;
     }
 
-    public static void fillShipPlace() {
-        if (coord1[0] == coord2[0]) {  // Si F es igual
-            if (coord1[1] <= coord2[1]) {  // 2  -  6
-                for (int i = coord1[1]; i <= coord2[1]; i++) {
-                    gameField[coord1[0]][i] = "O";
-                }
-            } else {
-                for (int i = coord1[1]; i >= coord2[1]; i--) {
-                    gameField[coord1[0]][i] = "O";
-                }
+    public static boolean isCloseAnotherPlace() {
+        if (coord1[0] == coord2[0]) {
+            int x = coord1[0];      // Siempre 2 == C
+            for (int y = coord1[1]; y <= coord2[1]; y++) {   // 3 al 7
+                if (isAdyacentOrActual(x, y)) return true;
             }
         } else {  // si 1 es igual
-            if (coord1[0] <= coord2[0]) {   //  A  -  D   ->   0 - 3
-                for (int i = coord1[0]; i <= coord2[0]; i++) {
-                    gameField[i][coord1[1]] = "O";
+            int y = coord1[1];
+            for (int x = coord1[0]; x <= coord2[0]; x++) {
+                if (isAdyacentOrActual(x, y)) return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static boolean isAdyacentOrActual(int x, int y) {
+        // Verify actual position
+        if (gameField[x][y].equals("O")) {
+            return true;
+        }
+
+        // Verify adyacent cells
+        if (x != 0) {
+            if (gameField[x - 1][y].equals("O")) { // top
+                return true;
+            }
+
+            if (y != 0) {
+                if (gameField[x - 1][y - 1].equals("O")) { //top left
+                    return true;
                 }
-            } else {
-                for (int i = coord1[0]; i >= coord2[0]; i--) {
-                    gameField[i][coord1[1]] = "O";
+            }
+
+            if (y != 9) {
+                if (gameField[x - 1][y + 1].equals("O")) { //top right
+                    return true;
                 }
+            }
+        }
+
+        if (x != 9) {
+            if (gameField[x + 1][y].equals("O")) { // bot
+                return true;
+            }
+
+            if (y != 9) {
+                if (gameField[x + 1][y + 1].equals("O")) { //bot right
+                    return true;
+                }
+            }
+
+            if (y != 0) {
+                if (gameField[x + 1][y - 1].equals("O")) { //bot left
+                    return true;
+                }
+            }
+        }
+
+        if (y != 0) {
+            if (gameField[x][y - 1].equals("O")) { // left
+                return true;
+            }
+        }
+
+        if (y != 9) {
+            if (gameField[x][y + 1].equals("O")) { // right
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void fillShipPlace() {
+        if (coord1[0] == coord2[0]) {  // Si F es igual
+            int x = coord1[0];
+            for (int y = coord1[1]; y <= coord2[1]; y++) {
+                gameField[x][y] = "O";
+            }
+        } else {  // si 1 es igual
+            int y = coord1[1];
+            for (int x = coord1[0]; x <= coord2[0]; x++) {
+                gameField[x][y] = "O";
             }
         }
     }
 
-    public static int fromAlphabetToNumber(String alphabet) {
-        //Coords for array
-        return switch (alphabet) {
-            case "A" -> 0;
-            case "B" -> 1;
-            case "C" -> 2;
-            case "D" -> 3;
-            case "E" -> 4;
-            case "F" -> 5;
-            case "G" -> 6;
-            case "H" -> 7;
-            case "I" -> 8;
-            case "J" -> 9;
-            default -> -1;
-        };
+    private static void orderCoords() {
+        if ((coord1[1] == coord2[1] && coord1[0] > coord2[0]) ||
+                (coord1[0] == coord2[0] && coord1[1] > coord2[1])) { // si el numero es igual y letras
+            int[] aux = coord1;
+            coord1 = coord2;
+            coord2 = aux;
+        }
     }
 }
 
@@ -218,8 +266,6 @@ class Ship {
 }
 
 
-
-
 /*public static void readCoordinates() {
     System.out.println("Enter the coordinates of the ship:");
     String[] input = scanner.nextLine().trim().split("\\s+");
@@ -231,9 +277,6 @@ class Ship {
         coordinates = new String[]{input[0], input[1]};
     }
 }*/
-
-
-
 
 
 //PARTS
