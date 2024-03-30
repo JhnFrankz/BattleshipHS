@@ -10,23 +10,26 @@ public class Main {
     private static int[] coord2;
     private static int length;
     private static List<Ship> ships;
+    // Shots
+    private static final String[][] fogOfWar = new String[10][10];
+    private static int[] shotCoord;
 
     public static void main(String[] args) {
         executeProgram();
     }
 
     public static void executeProgram() {
-        startGameField();
+        fillGameField(gameField);
         fillShips();
-        showGameField();
+        showGameField(gameField);
         readShipsCoordinates();
 
         startGameShot();
     }
 
-    public static void startGameField() {
-        for (String[] place : gameField) {
-            Arrays.fill(place, "~");
+    public static void fillGameField(String[][] x) {
+        for (String[] i : x) {
+            Arrays.fill(i, "~");
         }
     }
 
@@ -39,14 +42,14 @@ public class Main {
         ships.add(4, new Ship("Destroyer", 2));
     }
 
-    public static void showGameField() {
+    public static void showGameField(String[][] x) {
         String rowLetters = "ABCDEFGHIJ";
 
         System.out.println("  1 2 3 4 5 6 7 8 9 10");
-        for (int i = 0; i < gameField.length; i++) {
+        for (int i = 0; i < x.length; i++) {
             System.out.print(rowLetters.charAt(i));
-            for (int j = 0; j < gameField[i].length; j++) {
-                System.out.print(" " + gameField[i][j]);
+            for (int j = 0; j < x[i].length; j++) {
+                System.out.print(" " + x[i][j]);
             }
             System.out.println();
         }
@@ -58,6 +61,7 @@ public class Main {
 
             do {
                 String[] input = scanner.nextLine().trim().split("\\s+");
+                System.out.println();
 
                 if (input.length != 2 || !isValidAlphabetsRow(input) || !isValidNumbersColumn(input)) {
                     System.out.println("Error!\n");
@@ -83,48 +87,62 @@ public class Main {
 
             // We have valid coords
             fillShipPlace();
-            showGameField();
+            showGameField(gameField);
         }
     }
 
     public static void startGameShot() {
-        System.out.println("The game starts!\n");
-        showGameField();
+        System.out.println("\nThe game starts!\n");
+
+        fillGameField(fogOfWar);
+        showGameField(fogOfWar);
+
         readCoordShot();
+        fillShotCoord(); // Put symbol in Fog of War
+
+        //Final
+        showGameField(gameField);
     }
 
     public static void readCoordShot() {
         System.out.println("\nTake a shot!\n");
+
         while (true) {
             String input = scanner.nextLine().trim();
+            System.out.println();
+
             if (isValidCoord(input)) {
-                int[] coord = getNumbersShotCoord(input);
-                shotCoord(coord);
+                shotCoord = getShotCoord(input);
                 break;
             } else {
-                System.out.println("\nError! You entered the wrong coordinates! Try again:\n");
+                System.out.println("Error! You entered the wrong coordinates! Try again:\n");
             }
         }
     }
 
-    public static boolean isValidCoord(String coord) {
-        String validAlphabets = "ABCDEFGHIJ";
-        String[] validNumbers = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+    public static void fillShotCoord() {
+        String actualCoord = gameField[shotCoord[0]][shotCoord[1]];
+        String symbol = "";
 
-        boolean isAlphabet = validAlphabets.contains(String.valueOf(coord.charAt(0)));
-        boolean isNumber = false;
-
-        for (String number : validNumbers) {
-            if (number.equals(coord.substring(1))) {
-                isNumber = true;
-                break;
-            }
+        if (actualCoord.equals("O")) {
+            symbol = "X";
+            showFogOfWar(symbol);
+            System.out.println("\nYou hit a ship!\n");
+        } else if (actualCoord.equals("~")) {
+            symbol = "M";
+            showFogOfWar(symbol);
+            System.out.println("\nYou missed!\n");
         }
 
-        return isAlphabet && isNumber;
+        gameField[shotCoord[0]][shotCoord[1]] = symbol;
     }
 
-    public static int[] getNumbersShotCoord(String coord) {
+    public static void showFogOfWar(String symbol) {
+        fogOfWar[shotCoord[0]][shotCoord[1]] = symbol;
+        showGameField(fogOfWar);
+    }
+
+    public static int[] getShotCoord(String coord) {
         String validAlphabets = "ABCDEFGHIJ";
         String[] validNumbers = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
 
@@ -150,21 +168,24 @@ public class Main {
         return coordNumber;
     }
 
-    public static void shotCoord(int[] coord) {
+    public static boolean isValidCoord(String coord) {
+        String validAlphabets = "ABCDEFGHIJ";
+        String[] validNumbers = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
 
-        String actualCoord = gameField[coord[0]][coord[1]];
+        boolean isAlphabet = validAlphabets.contains(String.valueOf(coord.charAt(0)));
+        boolean isNumber = false;
 
-        if (actualCoord.equals("O")) {
-            gameField[coord[0]][coord[1]] = "X";
-            showGameField();
-            System.out.println("\nYou hit a ship!");
-        } else if (actualCoord.equals("~")) {
-            gameField[coord[0]][coord[1]] = "M";
-            showGameField();
-            System.out.println("\nYou missed!");
+        for (String number : validNumbers) {
+            if (number.equals(coord.substring(1))) {
+                isNumber = true;
+                break;
+            }
         }
+
+        return isAlphabet && isNumber;
     }
 
+    // For ships input
     public static boolean isValidAlphabetsRow(String[] input) {
         String validAlphabets = "ABCDEFGHIJ";
         boolean[] isValid = new boolean[2]; // Coord 1 and coord 2

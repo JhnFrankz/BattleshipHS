@@ -1,19 +1,15 @@
-### Add shooting functionality
+### Implement the "fog of war" feature
 
-Stage 3/6:Add shooting functionality
+Stage 4/6:Implement the "fog of war" feature
 
 #### Description
 
-The goal of this game is to sink all the ships of your opponent. Our fleet is not ready for a big battle yet, so let's practice shooting on our field. Place all your units on the battlefield and take a shot!
-
-In this step, you need to develop a system of shooting with accompanying messages about hits and misses.
+It seems a little odd to shoot your own ships. Let's imagine they are not ours! You can ask a friend to place the ships on the game field (or do it yourself, but it will be less exciting), and then the program will hide the ships under the fog of war. You just have to take a blind shot.
 
 
 #### Objectives
 
-Take a shot at a prepared game field. You need to indicate the coordinates of the target, and the program should then display a message about a hit or a miss. If the shell misses the target and falls in the water, this cell should be marked with an `M`, and a successful strike is marked by an `X`. After this shot, the game should be stopped.
-
-If the player managed to hit a ship, the game should display a message `You hit a ship!`; otherwise, the message is `You missed!`
+In this stage, you need to implement the "fog of war" feature in your game. First, place all the ships on the game field, and then hide them with the symbol `~`. Take a shot like in the previous stage, and after your attempt, the program should print a message along with two versions of the field: one covered with the fog of war and the other one uncovered.
 
 
 #### Examples
@@ -130,20 +126,34 @@ J ~ O ~ ~ ~ ~ ~ O O O
 The game starts!
 
   1 2 3 4 5 6 7 8 9 10
-A O ~ ~ ~ ~ ~ ~ ~ ~ ~
-B O ~ ~ ~ ~ ~ ~ ~ O ~
-C O ~ ~ ~ ~ ~ ~ ~ O ~
-D O ~ ~ ~ ~ ~ ~ ~ O ~
+A ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+B ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+C ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+D ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 E ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-F ~ ~ O O O O O ~ ~ ~
+F ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 G ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 H ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-I ~ O ~ ~ ~ ~ ~ ~ ~ ~
-J ~ O ~ ~ ~ ~ ~ O O O
+I ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+J ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
 Take a shot!
 
 > A1
+
+  1 2 3 4 5 6 7 8 9 10
+A X ~ ~ ~ ~ ~ ~ ~ ~ ~
+B ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+C ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+D ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+E ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+F ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+G ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+H ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+I ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+J ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
+You hit a ship!
 
   1 2 3 4 5 6 7 8 9 10
 A X ~ ~ ~ ~ ~ ~ ~ ~ ~
@@ -157,7 +167,6 @@ H ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 I ~ O ~ ~ ~ ~ ~ ~ ~ ~
 J ~ O ~ ~ ~ ~ ~ O O O
 
-You hit a ship!
 ```
 
 #### Example 2
@@ -167,24 +176,38 @@ You hit a ship!
 The game starts!
 
   1 2 3 4 5 6 7 8 9 10
-A O ~ ~ ~ ~ ~ ~ ~ ~ ~
-B O ~ ~ ~ ~ ~ ~ ~ O ~
-C O ~ ~ ~ ~ ~ ~ ~ O ~
-D O ~ ~ ~ ~ ~ ~ ~ O ~
+A ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+B ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+C ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+D ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 E ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-F ~ ~ O O O O O ~ ~ ~
+F ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 G ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 H ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-I ~ O ~ ~ ~ ~ ~ ~ ~ ~
-J ~ O ~ ~ ~ ~ ~ O O O
+I ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+J ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
 Take a shot!
 
 > Z1
 
-Error! You entered the wrong coordinates! Try again:
+Error! You entered wrong coordinates! Try again:
 
 > A2
+
+  1 2 3 4 5 6 7 8 9 10
+A ~ M ~ ~ ~ ~ ~ ~ ~ ~
+B ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+C ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+D ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+E ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+F ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+G ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+H ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+I ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+J ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
+You missed!
 
   1 2 3 4 5 6 7 8 9 10
 A O M ~ ~ ~ ~ ~ ~ ~ ~
@@ -197,6 +220,4 @@ G ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 H ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 I ~ O ~ ~ ~ ~ ~ ~ ~ ~
 J ~ O ~ ~ ~ ~ ~ O O O
-
-You missed!
 ```
