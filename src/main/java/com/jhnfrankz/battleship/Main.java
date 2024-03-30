@@ -20,6 +20,8 @@ public class Main {
         fillShips();
         showGameField();
         readShipsCoordinates();
+
+        startGameShot();
     }
 
     public static void startGameField() {
@@ -82,6 +84,84 @@ public class Main {
             // We have valid coords
             fillShipPlace();
             showGameField();
+        }
+    }
+
+    public static void startGameShot() {
+        System.out.println("The game starts!\n");
+        showGameField();
+        readCoordShot();
+    }
+
+    public static void readCoordShot() {
+        System.out.println("\nTake a shot!\n");
+        while (true) {
+            String input = scanner.nextLine().trim();
+            if (isValidCoord(input)) {
+                int[] coord = getNumbersShotCoord(input);
+                shotCoord(coord);
+                break;
+            } else {
+                System.out.println("\nError! You entered the wrong coordinates! Try again:\n");
+            }
+        }
+    }
+
+    public static boolean isValidCoord(String coord) {
+        String validAlphabets = "ABCDEFGHIJ";
+        String[] validNumbers = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+
+        boolean isAlphabet = validAlphabets.contains(String.valueOf(coord.charAt(0)));
+        boolean isNumber = false;
+
+        for (String number : validNumbers) {
+            if (number.equals(coord.substring(1))) {
+                isNumber = true;
+                break;
+            }
+        }
+
+        return isAlphabet && isNumber;
+    }
+
+    public static int[] getNumbersShotCoord(String coord) {
+        String validAlphabets = "ABCDEFGHIJ";
+        String[] validNumbers = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+
+        String alphabet = coord.substring(0, 1);
+        String number = coord.substring(1);
+
+        int[] coordNumber = new int[2];
+
+        for (int i = 0; i < validAlphabets.length(); i++) {
+            if (String.valueOf(validAlphabets.charAt(i)).equals(alphabet)) {
+                coordNumber[0] = i;
+                break;
+            }
+        }
+
+        for (int i = 0; i < validNumbers.length; i++) {
+            if (validNumbers[i].equals(number)) {
+                coordNumber[1] = i;
+                break;
+            }
+        }
+
+        return coordNumber;
+    }
+
+    public static void shotCoord(int[] coord) {
+
+        String actualCoord = gameField[coord[0]][coord[1]];
+
+        if (actualCoord.equals("O")) {
+            gameField[coord[0]][coord[1]] = "X";
+            showGameField();
+            System.out.println("\nYou hit a ship!");
+        } else if (actualCoord.equals("~")) {
+            gameField[coord[0]][coord[1]] = "M";
+            showGameField();
+            System.out.println("\nYou missed!");
         }
     }
 
