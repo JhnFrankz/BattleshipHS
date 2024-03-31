@@ -1,6 +1,7 @@
 package com.jhnfrankz.battleship;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Scanner;
 
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
@@ -8,8 +9,7 @@ public class Main {
     private static String[] strCoordinates;
     private static int[] coord1;
     private static int[] coord2;
-    private static int length;
-    private static List<Ship> ships;
+    private static int lengthBetweenCoords;
     // Shots
     private static final String[][] fogOfWar = new String[10][10];
     private static int[] shotCoord;
@@ -20,9 +20,8 @@ public class Main {
 
     public static void executeProgram() {
         fillGameField(gameField);
-        fillShips();
         showGameField(gameField);
-        readShipsCoordinates();
+        fillShips();
 
         startGameShot();
     }
@@ -34,12 +33,11 @@ public class Main {
     }
 
     public static void fillShips() {
-        ships = new ArrayList<>();
-        ships.add(0, new Ship("Aircraft Carrier", 5));
-        ships.add(1, new Ship("Battleship", 4));
-        ships.add(2, new Ship("Submarine", 3));
-        ships.add(3, new Ship("Cruiser", 3));
-        ships.add(4, new Ship("Destroyer", 2));
+        readShipCoords("Aircraft Carrier", 5);
+        readShipCoords("Battleship", 4);
+        readShipCoords("Submarine", 3);
+        readShipCoords("Cruiser", 3);
+        readShipCoords("Destroyer", 2);
     }
 
     public static void showGameField(String[][] x) {
@@ -55,40 +53,39 @@ public class Main {
         }
     }
 
-    public static void readShipsCoordinates() {
-        for (Ship ship : ships) {
-            System.out.printf("%nEnter the coordinates of the %s (%d cells):%n%n", ship.getName(), ship.getCells());
+    public static void readShipCoords(String name, int shipLength) {
+        System.out.printf("%nEnter the coordinates of the %s (%d cells):%n%n", name, shipLength);
 
-            do {
-                String[] input = scanner.nextLine().trim().split("\\s+");
-                System.out.println();
+        do {
+            String[] input = scanner.nextLine().trim().split("\\s+");
+            System.out.println();
 
-                if (input.length != 2 || !isValidAlphabetsRow(input) || !isValidNumbersColumn(input)) {
-                    System.out.println("Error!\n");
-                } else { // Si está bien el input
-                    strCoordinates = new String[]{input[0], input[1]};
-                    if (!isValidLocation()) { //isn't horizontally or vertically
-                        System.out.println("Error! Wrong ship location! Try again:\n");
-                    } else { // Si está bien en orientación
-                        checkCoordinates();
+            if (input.length != 2 || !isValidCoord(input[0]) || !isValidCoord(input[1])) {
+                System.out.println("Error! Try again:\n");
+            } else { // Si está bien el input
+                strCoordinates = new String[]{input[0], input[1]};
+                if (!isValidLocation()) { //isn't horizontally or vertically
+                    System.out.println("Error! Wrong ship location! Try again:\n");
+                } else { // Si está bien en orientación
+                    checkCoordinates();
 
-                        if (!isValidLength(ship.getCells())) { //isn't correct length
-                            System.out.printf("Error! Wrong length of the %s! Try again:\n\n", ship.getName());
+                    if (!isValidLength(shipLength)) { //isn't correct length
+                        System.out.printf("Error! Wrong length of the %s! Try again:\n\n", name);
+                    } else {
+                        if (isCloseAnotherPlace()) {
+                            System.out.println("Error! You placed it too close to another one. Try again:\n");
                         } else {
-                            if (isCloseAnotherPlace()) {
-                                System.out.println("Error! You placed it too close to another one. Try again:\n");
-                            } else {
-                                break;
-                            }
+                            break;
                         }
                     }
                 }
-            } while (true);
+            }
+        } while (true);
 
-            // We have valid coords
-            fillShipPlace();
-            showGameField(gameField);
-        }
+        // We have valid coords
+        fillShipPlace();
+        showGameField(gameField);
+//        }
     }
 
     public static void startGameShot() {
@@ -100,7 +97,6 @@ public class Main {
         readCoordShot();
         fillShotCoord(); // Put symbol in Fog of War
 
-        //Final
         showGameField(gameField);
     }
 
@@ -185,40 +181,17 @@ public class Main {
         return isAlphabet && isNumber;
     }
 
+    public static boolean isValidLocation() {
+        String strCoord1X = strCoordinates[0].substring(0, 1);   //A1
+        int coord1Y = Integer.parseInt(strCoordinates[0].substring(1));
+        String strCoord2X = strCoordinates[1].substring(0, 1);   //A4
+        int coord2Y = Integer.parseInt(strCoordinates[1].substring(1));
+
+        return (strCoord1X.equals(strCoord2X) && coord1Y != coord2Y)
+                || (!strCoord1X.equals(strCoord2X) && coord1Y == coord2Y);
+    }
+
     // For ships input
-    public static boolean isValidAlphabetsRow(String[] input) {
-        String validAlphabets = "ABCDEFGHIJ";
-        boolean[] isValid = new boolean[2]; // Coord 1 and coord 2
-
-        if (validAlphabets.contains(String.valueOf(input[0].charAt(0)))) {
-            isValid[0] = true;
-        }
-
-        if (validAlphabets.contains(String.valueOf(input[1].charAt(0)))) {
-            isValid[1] = true;
-        }
-
-        return isValid[0] && isValid[1];
-    }
-
-    public static boolean isValidNumbersColumn(String[] input) {
-        int[] validNumbers = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-        boolean[] isValid = new boolean[2]; // Coord 1 and coord 2
-
-        for (int i = 0; i < input.length; i++) {
-            String number = input[i].substring(1);
-
-            for (int validNumber : validNumbers) {
-                if (String.valueOf(validNumber).equals(number)) {
-                    isValid[i] = true;
-                    break;
-                }
-            }
-        }
-
-        return isValid[0] && isValid[1];
-    }
-
     public static void checkCoordinates() {
         int coord1X = strCoordinates[0].charAt(0) - 65;
         int coord1Y = Integer.parseInt(strCoordinates[0].substring(1)) - 1;
@@ -231,24 +204,14 @@ public class Main {
         orderCoords();
 
         if (coord1[0] == coord2[0]) { //isSameRow
-            length = Math.abs(coord1[1] - coord2[1]) + 1;
+            lengthBetweenCoords = Math.abs(coord1[1] - coord2[1]) + 1;
         } else {
-            length = Math.abs(coord1[0] - coord2[0]) + 1;
+            lengthBetweenCoords = Math.abs(coord1[0] - coord2[0]) + 1;
         }
     }
 
-    public static boolean isValidLocation() {
-        String strCoord1X = strCoordinates[0].substring(0, 1);   //A1
-        int coord1Y = Integer.parseInt(strCoordinates[0].substring(1));
-        String strCoord2X = strCoordinates[1].substring(0, 1);   //A4
-        int coord2Y = Integer.parseInt(strCoordinates[1].substring(1));
-
-        return (strCoord1X.equals(strCoord2X) && coord1Y != coord2Y)
-                || (!strCoord1X.equals(strCoord2X) && coord1Y == coord2Y);
-    }
-
-    public static boolean isValidLength(int shipCells) {
-        return length == shipCells;
+    public static boolean isValidLength(int shipLength) {
+        return lengthBetweenCoords == shipLength;
     }
 
     public static boolean isCloseAnotherPlace() {
@@ -340,7 +303,7 @@ public class Main {
 
     private static void orderCoords() {
         if ((coord1[1] == coord2[1] && coord1[0] > coord2[0]) ||
-                (coord1[0] == coord2[0] && coord1[1] > coord2[1])) { // si el numero es igual y letras
+                (coord1[0] == coord2[0] && coord1[1] > coord2[1])) {
             int[] aux = coord1;
             coord1 = coord2;
             coord2 = aux;
@@ -348,7 +311,7 @@ public class Main {
     }
 }
 
-class Ship {
+/*class Ship {
     private final String name;
     private final int cells;
 
@@ -364,7 +327,7 @@ class Ship {
     public int getCells() {
         return cells;
     }
-}
+}*/
 
 
 /*public static void readCoordinates() {

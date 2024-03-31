@@ -1,22 +1,23 @@
-### Implement the "fog of war" feature
+### Define rules to end the game
 
-Stage 4/6:Implement the "fog of war" feature
+Stage 5/6:Define rules to end the game
 
 #### Description
 
-It seems a little odd to shoot your own ships. Let's imagine they are not ours! You can ask a friend to place the ships on the game field (or do it yourself, but it will be less exciting), and then the program will hide the ships under the fog of war. You just have to take a blind shot.
+It looks like everything is ready for full-scale battlefield maneuvers! This time, don't cease fire until all the ships are sunk. At the end of the game, your program should print a congratulatory message to the winner: `You sank the last ship. You won. Congratulations!`
 
 
 #### Objectives
 
-In this stage, you need to implement the "fog of war" feature in your game. First, place all the ships on the game field, and then hide them with the symbol `~`. Take a shot like in the previous stage, and after your attempt, the program should print a message along with two versions of the field: one covered with the fog of war and the other one uncovered.
+To complete this step, you should add a check that all the ships were successfully sunk. The game is supposed to go on until all ships go down. The program should print an extra message `You sank a ship!` when all the cells of a particular ship have been hit. Take a look at the examples below!
+
+For the sake of simplicity; the project does not consider shots to coordinates that are already shot at to be any different. Regardless of whether the coordinate was previously a hit or a miss, you should display `You hit a ship!` and `You missed!` again respectively.
 
 
-#### Examples
+#### Example
 
 The greater-than symbol followed by a space `>` represents the user input. Note that it's not part of the input.
 
-#### Example 1
 
 ```
   1 2 3 4 5 6 7 8 9 10
@@ -153,50 +154,12 @@ H ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 I ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 J ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
-You hit a ship!
-
-  1 2 3 4 5 6 7 8 9 10
-A X ~ ~ ~ ~ ~ ~ ~ ~ ~
-B O ~ ~ ~ ~ ~ ~ ~ O ~
-C O ~ ~ ~ ~ ~ ~ ~ O ~
-D O ~ ~ ~ ~ ~ ~ ~ O ~
-E ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-F ~ ~ O O O O O ~ ~ ~
-G ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-H ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-I ~ O ~ ~ ~ ~ ~ ~ ~ ~
-J ~ O ~ ~ ~ ~ ~ O O O
-
-```
-
-#### Example 2
-
-```
-...
-The game starts!
-
-  1 2 3 4 5 6 7 8 9 10
-A ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-B ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-C ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-D ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-E ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-F ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-G ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-H ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-I ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-J ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-
-Take a shot!
-
-> Z1
-
-Error! You entered wrong coordinates! Try again:
+You hit a ship! Try again:
 
 > A2
 
   1 2 3 4 5 6 7 8 9 10
-A ~ M ~ ~ ~ ~ ~ ~ ~ ~
+A X M ~ ~ ~ ~ ~ ~ ~ ~
 B ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 C ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 D ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
@@ -207,17 +170,118 @@ H ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 I ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 J ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
-You missed!
+You missed. Try again:
+
+> B1
 
   1 2 3 4 5 6 7 8 9 10
-A O M ~ ~ ~ ~ ~ ~ ~ ~
-B O ~ ~ ~ ~ ~ ~ ~ O ~
-C O ~ ~ ~ ~ ~ ~ ~ O ~
-D O ~ ~ ~ ~ ~ ~ ~ O ~
+A X M ~ ~ ~ ~ ~ ~ ~ ~
+B X ~ ~ ~ ~ ~ ~ ~ ~ ~
+C ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+D ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 E ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-F ~ ~ O O O O O ~ ~ ~
+F ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 G ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 H ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-I ~ O ~ ~ ~ ~ ~ ~ ~ ~
-J ~ O ~ ~ ~ ~ ~ O O O
+I ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+J ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
+You hit a ship! Try again:
+
+> C1
+
+  1 2 3 4 5 6 7 8 9 10
+A X M ~ ~ ~ ~ ~ ~ ~ ~
+B X ~ ~ ~ ~ ~ ~ ~ ~ ~
+C X ~ ~ ~ ~ ~ ~ ~ ~ ~
+D ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+E ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+F ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+G ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+H ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+I ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+J ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
+You hit a ship! Try again:
+
+> D1
+
+  1 2 3 4 5 6 7 8 9 10
+A X M ~ ~ ~ ~ ~ ~ ~ ~
+B X ~ ~ ~ ~ ~ ~ ~ ~ ~
+C X ~ ~ ~ ~ ~ ~ ~ ~ ~
+D X ~ ~ ~ ~ ~ ~ ~ ~ ~
+E ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+F ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+G ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+H ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+I ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+J ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
+You sank a ship! Specify a new target:
+
+> E4
+
+  1 2 3 4 5 6 7 8 9 10
+A X M ~ ~ ~ ~ ~ ~ ~ ~
+B X ~ ~ ~ ~ ~ ~ ~ ~ ~
+C X ~ ~ ~ ~ ~ ~ ~ ~ ~
+D X ~ ~ ~ ~ ~ ~ ~ ~ ~
+E ~ ~ ~ M ~ ~ ~ ~ ~ ~
+F ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+G ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+H ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+I ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+J ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
+You missed. Try again:
+
+> C9
+
+  1 2 3 4 5 6 7 8 9 10
+A X M ~ ~ ~ ~ ~ ~ ~ ~
+B X ~ ~ ~ ~ ~ ~ ~ ~ ~
+C X ~ ~ ~ ~ ~ ~ ~ X ~
+D X ~ ~ ~ ~ ~ ~ ~ ~ ~
+E ~ ~ ~ M ~ ~ ~ ~ ~ ~
+F ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+G ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+H ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+I ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+J ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
+You hit a ship! Try again:
+
+...
+
+  1 2 3 4 5 6 7 8 9 10
+A X M ~ ~ ~ ~ ~ ~ ~ ~
+B X ~ ~ M ~ ~ M ~ X ~
+C X ~ ~ ~ ~ ~ ~ ~ X ~
+D X ~ ~ ~ ~ M ~ ~ X ~
+E ~ ~ ~ M ~ ~ M ~ M ~
+F M ~ X X X X X M ~ ~
+G ~ ~ ~ ~ ~ ~ M ~ ~ ~
+H ~ M M ~ ~ ~ ~ ~ ~ M
+I ~ X ~ ~ M ~ ~ M ~ ~
+J ~ X ~ ~ ~ ~ M X X ~
+
+You hit a ship! Try again:
+
+> J10
+
+  1 2 3 4 5 6 7 8 9 10
+A X M ~ ~ ~ ~ ~ ~ ~ ~
+B X ~ ~ M ~ ~ M ~ X ~
+C X ~ ~ ~ ~ ~ ~ ~ X ~
+D X ~ ~ ~ ~ M ~ ~ X ~
+E ~ ~ ~ M ~ ~ M ~ M ~
+F M ~ X X X X X M ~ ~
+G ~ ~ ~ ~ ~ ~ M ~ ~ ~
+H ~ M M ~ ~ ~ ~ ~ ~ M
+I ~ X ~ ~ M ~ ~ M ~ ~
+J ~ X ~ ~ ~ ~ M X X X
+
+You sank the last ship. You won. Congratulations!
+
 ```
