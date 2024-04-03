@@ -59,33 +59,43 @@ public class Main {
         do {
             String[] input = scanner.nextLine().trim().split("\\s+");
             System.out.println();
+            // TODO: create a method for errors between
 
-            if (input.length != 2 || !isValidCoord(input[0]) || !isValidCoord(input[1])) {
-                System.out.println("Error! Try again:\n");
-            } else { // Si está bien el input
-                strCoordinates = new String[]{input[0], input[1]};
-                if (!isValidLocation()) { //isn't horizontally or vertically
-                    System.out.println("Error! Wrong ship location! Try again:\n");
-                } else { // Si está bien en orientación
-                    checkCoordinates();
+            int result = checkErrors(name, shipLength, input);
 
-                    if (!isValidLength(shipLength)) { //isn't correct length
-                        System.out.printf("Error! Wrong length of the %s! Try again:\n\n", name);
-                    } else {
-                        if (isCloseAnotherPlace()) {
-                            System.out.println("Error! You placed it too close to another one. Try again:\n");
-                        } else {
-                            break;
-                        }
-                    }
-                }
-            }
+            if (result == 0) break;
         } while (true);
 
         // We have valid coords
-        fillShipPlace();
+        fillCoordPlace();
         showGameField(gameField);
 //        }
+    }
+
+    public static int checkErrors(String name, int shipLength, String[] input) {
+        if (input.length != 2 || !isValidCoord(input[0]) || !isValidCoord(input[1])) {
+            System.out.println("Error! Try again:\n");
+            return 1;
+        }
+
+        strCoordinates = new String[]{input[0], input[1]};
+        if (!isValidLocation()) { //isn't horizontally or vertically
+            System.out.println("Error! Wrong ship location! Try again:\n");
+            return 1;
+        }
+
+        checkCoordinates();
+        if (!isValidLength(shipLength)) { //isn't correct length
+            System.out.printf("Error! Wrong length of the %s! Try again:\n\n", name);
+            return 1;
+        }
+
+        if (isCloseAnotherPlace()) {
+            System.out.println("Error! You placed it too close to another one. Try again:\n");
+            return 1;
+        }
+
+        return 0;
     }
 
     public static void startGameShot() {
@@ -287,7 +297,7 @@ public class Main {
         return false;
     }
 
-    public static void fillShipPlace() {
+    public static void fillCoordPlace() {
         if (coord1[0] == coord2[0]) {  // Si F es igual
             int x = coord1[0];
             for (int y = coord1[1]; y <= coord2[1]; y++) {
